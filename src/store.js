@@ -1,68 +1,88 @@
 import { createStore } from 'vuex';
+import axios from 'axios';
 
 export const store = createStore({
-	state: {
-		parent: {
-			name: '',
-			age: '',
+	state() {
+		return {
+			favorites: [
+				{
+					id: 1,
+					isFavoriteStatus: true,
+				},
+				{
+					id: 2,
+					isFavoriteStatus: true,
+				},
+				{
+					id: 3,
+					isFavoriteStatus: false,
+				},
+				{
+					id: 4,
+					isFavoriteStatus: true,
+				},
+				{
+					id: 5,
+					isFavoriteStatus: false,
+				},
+				{
+					id: 6,
+					isFavoriteStatus: true,
+				},
+				{
+					id: 7,
+					isFavoriteStatus: true,
+				},
+			],
+			isOpenMenu: false,
+			goods: [],
+		};
+	},
+	getters: {
+		getFavorites(state) {
+			return state.favorites;
 		},
-		child: {
-			name: '',
-			age: '',
-		},
-		children: [],
-		goods: [],
 	},
 	mutations: {
-		addChild(state) {
-			state.children.push({ ...state.child, id: Date.now() });
-		},
-		removeChild(state, id) {
-			state.children = state.children.filter((item) => item.id !== id);
-		},
-		saveForm(state) {
-			let isValid = true;
-
-			if (!state.parent.name || !state.parent.age) {
-				isValid = false;
-				alert('Заполните поля');
-			}
-			state.children.forEach((item) => {
-				if (item.name == '' || item.age == '') {
-					isValid = false;
-					alert('Заполните поля');
-				}
-			});
-
-			if (isValid) {
-				localStorage.setItem('parent', JSON.stringify(state.parent));
-				localStorage.setItem('children', JSON.stringify(state.children));
-				alert('Сохранено');
+		setFavoriteStatus(state) {
+			if (localStorage.getItem('favorites')) {
+				state.favorites = JSON.parse(localStorage.getItem('favorites'));
 			}
 		},
-		setParentName(state, value) {
-			state.parent.name = value;
-		},
-		setParentAge(state, value) {
-			state.parent.age = value;
-		},
 
-		initialData(state) {
-			if (store.parent) {
-				const parentStorage = JSON.parse(localStorage.getItem('parent'));
-				state.parent.name = parentStorage.name;
-				state.parent.age = parentStorage.age;
+		changeFavoriteStatus(state, id) {
+			const findItem = state.favorites.find((item) => item.id === id);
+			if (findItem) {
+				findItem.isFavoriteStatus = !findItem.isFavoriteStatus;
 			}
+		},
 
-			const children = JSON.parse(localStorage.getItem('children'));
-			if (children) {
-				const childrenStorage = children;
+		changeMenu(state) {
+			state.isOpenMenu = !state.isOpenMenu;
 
-				state.children.length = 0;
-				childrenStorage.forEach((element) => {
-					state.children.push(element);
+			document.querySelector('body')?.classList.add('active');
+		},
+
+		setGoods(state, goods) {
+			this.state.goods = goods;
+		},
+	},
+	actions: {
+		fetchGoods({ commit }) {
+			return axios
+				.get('api/product.json', {
+					headers: {
+						'Access-Control-Allow-Origin': '*',
+					},
+				})
+				.then((response) => {
+					commit('setGoods', response.data);
+					console.log('response', response.data);
 				});
-			}
+		},
+		localStorageFavoriteStatus({ commit, state }, id) {
+			commit('changeFavoriteStatus', id);
+			localStorage.setItem('favorites', JSON.stringify(state.favorites));
 		},
 	},
 });
