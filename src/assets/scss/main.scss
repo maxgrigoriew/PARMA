@@ -19,3 +19,13 @@ body {
 body.active {
 	overflow-y: hidden;
 }
+
+.v-enter-active,
+.v-leave-active {
+	transition: $transition;
+}
+
+.v-enter-from,
+.v-leave-to {
+	opacity: 0;
+}

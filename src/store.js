@@ -4,43 +4,14 @@ import axios from 'axios';
 export const store = createStore({
 	state() {
 		return {
-			favorites: [
-				{
-					id: 1,
-					isFavoriteStatus: true,
-				},
-				{
-					id: 2,
-					isFavoriteStatus: true,
-				},
-				{
-					id: 3,
-					isFavoriteStatus: false,
-				},
-				{
-					id: 4,
-					isFavoriteStatus: true,
-				},
-				{
-					id: 5,
-					isFavoriteStatus: false,
-				},
-				{
-					id: 6,
-					isFavoriteStatus: true,
-				},
-				{
-					id: 7,
-					isFavoriteStatus: true,
-				},
-			],
+			favorites: [],
 			isOpenMenu: false,
-			goods: [],
+			products: [],
 		};
 	},
 	getters: {
-		getFavorites(state) {
-			return state.favorites;
+		getProductsCount(state) {
+			return state.favorites.length;
 		},
 	},
 	mutations: {
@@ -63,12 +34,22 @@ export const store = createStore({
 			document.querySelector('body')?.classList.add('active');
 		},
 
-		setGoods(state, goods) {
-			this.state.goods = goods;
+		setProducts(state, products) {
+			this.state.products = products;
+		},
+
+		addProduct(state, product) {
+			if (!this.state.favorites.find((item) => item.id === product.id)) {
+				this.state.favorites.push(product);
+			} else {
+				this.state.favorites = this.state.favorites.filter(
+					(item) => item.id !== product.id
+				);
+			}
 		},
 	},
 	actions: {
-		fetchGoods({ commit }) {
+		fetchProducts({ commit }) {
 			return axios
 				.get('api/product.json', {
 					headers: {
@@ -76,7 +57,7 @@ export const store = createStore({
 					},
 				})
 				.then((response) => {
-					commit('setGoods', response.data);
+					commit('setProducts', response.data);
 					console.log('response', response.data);
 				});
 		},

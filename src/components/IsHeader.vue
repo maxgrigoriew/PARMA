@@ -3,9 +3,6 @@ import { computed } from 'vue';
 import { useStore } from 'vuex';
 
 const store = useStore();
-const countFavoriteStatus = computed(
-	() => store.state.favorites.filter((item) => item.isFavoriteStatus).length
-);
 </script>
 >
 <template>
@@ -22,8 +19,9 @@ const countFavoriteStatus = computed(
 						</li>
 						<li class="nav__item">
 							<span class="nav__link-cart-counter">{{
-								countFavoriteStatus
+								store.getters.getProductsCount
 							}}</span>
+
 							<router-link to="/about" class="nav__link">Корзина</router-link>
 						</li>
 					</ul>
