@@ -17,9 +17,10 @@ const props = defineProps({
 		type: Boolean,
 		default: false,
 	},
+
 	isDescription: {
 		type: Boolean,
-		default: true,
+		default: false,
 	},
 });
 
