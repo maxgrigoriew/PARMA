@@ -1,5 +1,4 @@
 <script setup>
-import { computed } from 'vue';
 import { useStore } from 'vuex';
 
 const store = useStore();
@@ -9,20 +8,19 @@ const store = useStore();
 	<header class="header" :class="{ active: store.state.isOpenMenu }">
 		<div class="container">
 			<div class="header__inner">
-				<a class="header__logo">
+				<router-link to="/" class="header__logo">
 					<img src="./../assets/images/logo.png" alt="Логотип компании Alef" />
-				</a>
+				</router-link>
 				<nav class="nav" :class="{ active: store.state.isOpenMenu }">
 					<ul class="nav__list">
-						<li class="nav__item">
+						<li class="nav__item" @click="store.commit('changeMenu')">
 							<router-link to="/" class="nav__link">Главная</router-link>
 						</li>
-						<li class="nav__item">
+						<li class="nav__item" @click="store.commit('changeMenu')">
 							<span class="nav__link-cart-counter">{{
-								store.getters.getProductsCount
+								store.getters.getFavoritesCount
 							}}</span>
-
-							<router-link to="/about" class="nav__link">Корзина</router-link>
+							<router-link to="/cart" class="nav__link">Корзина</router-link>
 						</li>
 					</ul>
 				</nav>
@@ -146,6 +144,7 @@ const store = useStore();
 
 	.nav {
 		position: fixed;
+		z-index: 10;
 		background-color: var(--light);
 		top: 60px;
 		left: -100vw;
@@ -171,6 +170,10 @@ const store = useStore();
 			transition: all var(--transition);
 			&:hover {
 				color: var(--accent);
+			}
+
+			&-cart-counter {
+				display: none;
 			}
 		}
 		&.active {

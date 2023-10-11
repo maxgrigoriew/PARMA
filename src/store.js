@@ -10,8 +10,15 @@ export const store = createStore({
 		};
 	},
 	getters: {
-		getProductsCount(state) {
+		getFavorites: (state) => {
+			return state.favorites;
+		},
+		getFavoritesCount: (state) => {
 			return state.favorites.length;
+		},
+
+		findProductById: (state) => (id) => {
+			return state.products.find((product) => product.id === id);
 		},
 	},
 	mutations: {
@@ -30,8 +37,7 @@ export const store = createStore({
 
 		changeMenu(state) {
 			state.isOpenMenu = !state.isOpenMenu;
-
-			document.querySelector('body')?.classList.add('active');
+			document.querySelector('body')?.classList.toggle('active');
 		},
 
 		setProducts(state, products) {
@@ -47,6 +53,20 @@ export const store = createStore({
 				);
 			}
 		},
+		initialData(state) {
+			const favorites = JSON.parse(localStorage.getItem('favorites'));
+			store.state.favorites = favorites;
+		},
+
+		setLocalStorage(state) {
+			localStorage.setItem('favorites', JSON.stringify(state.favorites));
+		},
+
+		removeProduct(state, product) {
+			this.state.favorites = this.state.favorites.filter(
+				(item) => item.id !== product.id
+			);
+		},
 	},
 	actions: {
 		fetchProducts({ commit }) {
@@ -58,12 +78,16 @@ export const store = createStore({
 				})
 				.then((response) => {
 					commit('setProducts', response.data);
-					console.log('response', response.data);
 				});
 		},
-		localStorageFavoriteStatus({ commit, state }, id) {
-			commit('changeFavoriteStatus', id);
-			localStorage.setItem('favorites', JSON.stringify(state.favorites));
+
+		addLocalStorageFavorites({ commit, state }, product) {
+			commit('addProduct', product);
+			commit('setLocalStorage');
+		},
+		removeLocalStorageFavorites({ commit, state }, product) {
+			commit('addProduct', product);
+			commit('setLocalStorage');
 		},
 	},
 });

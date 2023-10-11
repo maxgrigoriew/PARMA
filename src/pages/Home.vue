@@ -13,32 +13,47 @@ const products = computed(() => {
 });
 
 const addProducts = () => {
-	if (limitProducts.value < store.state.products.length) {
+	if (checkLimit) {
 		limitProducts.value += 4;
 	}
 };
 
+const checkProductInFavorite = (product) => {
+	return store.state.favorites.find((item) => item.id === product.id);
+};
+const checkLimit = computed(
+	() => limitProducts.value < store.state.products.length
+);
+
 onMounted(() => {
+	store.commit('initialData');
 	store.dispatch('fetchProducts');
 });
 </script>
 
 <template>
+	<h2 class="title">Список товаров</h2>
 	<ul class="card-list">
 		<transition-group>
 			<li class="card-list__item" v-for="product in products" :key="product.id">
-				<a href="#" class="card-list__link">
+				<router-link
+					:to="{ name: 'product', params: { id: product.id } }"
+					class="card-list__link"
+				>
 					<is-card
 						:product="product"
-						@onAddProduct="store.commit('addProduct', product)"
+						:statusIcon="checkProductInFavorite(product)"
+						@onAddProduct="store.dispatch('addLocalStorageFavorites', product)"
 					/>
-				</a>
+				</router-link>
 			</li>
 		</transition-group>
 	</ul>
 
 	<div class="button-wrapper">
-		<is-button @click="addProducts">Показать еще</is-button>
+		<is-button @click="addProducts" :disabled="!checkLimit"
+			>Показать еще</is-button
+		>
 	</div>
 </template>
 
